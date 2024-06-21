@@ -30,11 +30,11 @@ function CommentSection() {
 
   return (
   <>
-    <div className="flex flex-col p-[50px]">
+    <div className="flex flex-col p-[50px] pb-[25%]">
       {Api.map((comment) => {
         return (
-          <div className="bg-white mt-4 rounded-sm" key={comment.id}> {/* FUNCTION COMENTÁRIO */}
-            <div className="flex"> {/* POST */}
+          <div className="mt-4 rounded-sm" key={comment.id}> {/* FUNCTION COMENTÁRIO */}
+            <div className="bg-white flex"> {/* POST */}
               <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] py-[9px] items-center rounded-md">
                 <img src={IconPlus} alt="plus icon" className="m-auto"/>
                 <h3 className="py-2">{comment.score}</h3>
@@ -49,7 +49,7 @@ function CommentSection() {
                     <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.createdAt}</p>
                   </div>
 
-                  <div className="flex">
+                  <div className="flex cursor-pointer">
                     <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
                     <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
                   </div>
@@ -62,7 +62,7 @@ function CommentSection() {
             </div>
 
             {/* COMMENT BELOW */}
-            <div className="flex flex-col absolute">
+            <div className="grid grid-cols-1">
               {comment.replies && comment.replies.length > 0 && (
                 comment.replies.map((reply) => {
                   return (
