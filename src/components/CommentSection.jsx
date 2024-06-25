@@ -44,7 +44,7 @@ function CommentSection() {
               <div className="p-4">
                 <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
                   <div className="flex text-center items-center">
-                    <img src={`../assets/images/avatars/image-${comment.user.username}.png`} className="w-6" alt="avatar" />
+                    <img src={`../src/assets/images/avatars/image-${comment.user.username}.png`} className="w-6" alt="avatar" />
                     <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.user.username}</p>
                     <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.createdAt}</p>
                   </div>
@@ -76,7 +76,7 @@ function CommentSection() {
                       <div className="p-4">
                         <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
                           <div className="flex text-center items-center">
-                            <img src={`../assets/images/avatars/image-${reply.user.username}.png`} className="w-6" alt="avatar" />
+                            <img src={`../src/assets/images/avatars/image-${reply.user.username}.png`} className="w-6" alt="avatar" />
                             <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{reply.user.username}</p>
                             <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{reply.createdAt}</p>
                           </div>
