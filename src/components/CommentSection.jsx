@@ -9,11 +9,11 @@ function CommentSection() {
   const [ Api, setApi ] = useState([]) // FETCH PARA DADOS
   
   useEffect(() => {
-    fetch(`/data.json`)
+    fetch(`/api/comments`)
         .then((response) => response.json())
         .then((data) => {
             console.log(data)
-            setApi(data.comments)
+            setApi(data)
         })
         .catch((err) => {
             console.log(err)

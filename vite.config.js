@@ -5,13 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173, // Porta do Vite (frontend)
     proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
+      '/api': 'http://localhost:5000' // Proxy API requests to Express server
+    }
+  }
 })
