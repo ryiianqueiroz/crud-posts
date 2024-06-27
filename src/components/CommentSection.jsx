@@ -1,26 +1,13 @@
+/* eslint-disable react/prop-types */
 import IconPlus from "../assets/images/icon-plus.svg"
 import IconMinus from "../assets/images/icon-minus.svg"
-import { useEffect, useState } from "react";
 import LoadingGIF from "../assets/loading-gif.gif"
 import Reply from "../assets/images/icon-reply.svg"
+import DeleteIcon from "../assets/images/icon-delete.svg"
 
-function CommentSection() {
+function CommentSection({ comments }) {
 
-  const [ Api, setApi ] = useState([]) // FETCH PARA DADOS
-  
-  useEffect(() => {
-    fetch(`/api/comments`)
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data)
-            setApi(data)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-  }, [])
-
-  if ( !Api ) {
+  if ( !comments ) {
     return (
       <div>
         <img src={LoadingGIF} alt="#" />
@@ -31,7 +18,7 @@ function CommentSection() {
   return (
   <>
     <div className="flex flex-col p-[50px] pb-[25%]">
-      {Api.map((comment) => {
+      {comments.map((comment) => {
         return (
           <div className="mt-4 rounded-sm" key={comment.id}> {/* FUNCTION COMENTÁRIO */}
             <div className="bg-white flex"> {/* POST */}
@@ -46,12 +33,27 @@ function CommentSection() {
                   <div className="flex text-center items-center">
                     <img src={`../src/assets/images/avatars/image-${comment.user.username}.png`} className="w-6" alt="avatar" />
                     <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.user.username}</p>
+                    { comment.user.username == "juliusomo" ? (
+                      <p className="px-1 py-[2px] text-center mx-1 bg-[#6a41da] text-white text-[0.6rem]">you</p>
+                    ) : (
+                      <></>
+                    ) }
                     <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.createdAt}</p>
                   </div>
 
-                  <div className="flex cursor-pointer">
-                    <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
-                    <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
+                  <div className="flex cursor-pointer items-center">
+                    { comment.user.username == "juliusomo" ? (
+                      <div className="flex">
+                        <img src={DeleteIcon} className="w-3 h-4 my-[3px] mx-1" alt="delete-icon" />
+                        <p className="text-[#ce1c1c] mr-2">Delete</p>
+                      </div>
+                    ) : (
+                      <></>
+                    ) }
+                    <div className="flex">
+                      <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
+                      <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
+                    </div>
                   </div>
                 </div>
 
@@ -78,12 +80,27 @@ function CommentSection() {
                           <div className="flex text-center items-center">
                             <img src={`../src/assets/images/avatars/image-${reply.user.username}.png`} className="w-6" alt="avatar" />
                             <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{reply.user.username}</p>
+                            { reply.user.username == "juliusomo" ? (
+                              <p className="px-1 py-[2px] text-center mx-1 bg-[#6a41da] text-white text-[0.6rem]">you</p>
+                            ) : (
+                              <></>
+                            ) }
                             <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{reply.createdAt}</p>
                           </div>
 
-                          <div className="flex">
-                            <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
-                            <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
+                          <div className="flex items-center">
+                            { reply.user.username == "juliusomo" ? (
+                              <div className="flex">
+                                <img src={DeleteIcon} className="w-3 h-4 my-[3px] mx-1" alt="delete-icon" />
+                                <p className="text-[#ce1c1c] mr-2">Delete</p>
+                              </div>
+                            ) : (
+                              <></>
+                            ) }
+                            <div className="flex">
+                              <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
+                              <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
+                            </div>
                           </div>
                         </div>
 
