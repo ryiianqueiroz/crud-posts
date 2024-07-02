@@ -1,8 +1,9 @@
 import { useState } from "react";
 import Avatar from "../assets/images/avatars/image-juliusomo.png"
+import { postComment } from "../requests/request";
 
 // eslint-disable-next-line react/prop-types
-function PostSection({ addComment }) {
+function PostSection() {
   
   const [content, setContent] = useState('');
 
@@ -21,7 +22,7 @@ function PostSection({ addComment }) {
       },
       replies: []
     }
-    addComment(newComment)
+    postComment(newComment)
     setContent("")
   }
 

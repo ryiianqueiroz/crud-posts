@@ -4,8 +4,37 @@ import IconMinus from "../assets/images/icon-minus.svg"
 import LoadingGIF from "../assets/loading-gif.gif"
 import Reply from "../assets/images/icon-reply.svg"
 import DeleteIcon from "../assets/images/icon-delete.svg"
+import { useEffect, useState } from "react"
+import { fetchComments } from "../requests/request"
+import { deletarComentario } from "../requests/request"
 
-function CommentSection({ comments }) {
+function CommentSection() {
+
+  const [comments, setComments] = useState([]);
+
+  const getComments = async () => {
+    try {
+      const data = await fetchComments();
+      setComments(data);
+    } catch (error) {
+      console.error('Failed to fetch comments:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    getComments();
+  }, [])
+
+  const deleteComment = async ( id, type = "comment", idReply = "default" ) => {
+    console.log(id)
+    try {
+      await deletarComentario(id, type, idReply)
+      await getComments()
+    } catch ( error ) {
+      console.log("Erro ao tentar deletar comentário: ", error)
+    }
+  }
 
   if ( !comments ) {
     return (
@@ -24,33 +53,35 @@ function CommentSection({ comments }) {
             <div className="bg-white flex"> {/* POST */}
               <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] py-[9px] items-center rounded-md">
                 <img src={IconPlus} alt="plus icon" className="m-auto"/>
-                <h3 className="py-2">{comment.score}</h3>
+                <h3 className="py-2 text-[#4d319c] font-medium">{comment.score}</h3>
                 <img src={IconMinus} alt="minus icon" className="m-auto"/>
               </div>
 
-              <div className="p-4">
+              <div className="p-4 w-full">
                 <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
                   <div className="flex text-center items-center">
                     <img src={`../src/assets/images/avatars/image-${comment.user.username}.png`} className="w-6" alt="avatar" />
                     <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.user.username}</p>
+                    
                     { comment.user.username == "juliusomo" ? (
                       <p className="px-1 py-[2px] text-center mx-1 bg-[#6a41da] text-white text-[0.6rem]">you</p>
                     ) : (
                       <></>
                     ) }
+
                     <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.createdAt}</p>
                   </div>
 
-                  <div className="flex cursor-pointer items-center">
+                  <div className="flex items-center">
                     { comment.user.username == "juliusomo" ? (
-                      <div className="flex">
-                        <img src={DeleteIcon} className="w-3 h-4 my-[3px] mx-1" alt="delete-icon" />
-                        <p className="text-[#ce1c1c] mr-2">Delete</p>
+                      <div className="flex cursor-pointer" onClick={() => deleteComment(comment.id)}>
+                        <img src={DeleteIcon} className="w-2 h-3 my-[3px] mx-1" alt="delete-icon" />
+                        <p className="text-[#ce1c1c] mr-2 text-[0.8rem]">Delete</p>
                       </div>
                     ) : (
                       <></>
                     ) }
-                    <div className="flex">
+                    <div className="flex cursor-pointer">
                       <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
                       <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
                     </div>
@@ -71,7 +102,7 @@ function CommentSection({ comments }) {
                     <div key={reply.id} className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px]">
                       <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] py-[9px] items-center rounded-md">
                         <img src={IconPlus} alt="plus icon" className="m-auto"/>
-                        <h3 className="py-2">{reply.id}</h3>
+                        <h3 className="py-2 text-[#4d319c] font-medium">{reply.score}</h3>
                         <img src={IconMinus} alt="minus icon" className="m-auto"/>
                       </div>
 
@@ -90,14 +121,14 @@ function CommentSection({ comments }) {
 
                           <div className="flex items-center">
                             { reply.user.username == "juliusomo" ? (
-                              <div className="flex">
-                                <img src={DeleteIcon} className="w-3 h-4 my-[3px] mx-1" alt="delete-icon" />
-                                <p className="text-[#ce1c1c] mr-2">Delete</p>
+                              <div className="flex cursor-pointer" onClick={() => deleteComment(comment.id, "reply", reply.id)}>
+                                <img src={DeleteIcon} className="w-2 h-3 my-[3px] mx-1" alt="delete-icon" />
+                                <p className="text-[#ce1c1c] mr-2 text-[0.8rem]">Delete</p>
                               </div>
                             ) : (
                               <></>
                             ) }
-                            <div className="flex">
+                            <div className="flex cursor-pointer">
                               <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
                               <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
                             </div>

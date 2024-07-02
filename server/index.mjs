@@ -21,7 +21,7 @@ const dataFilePath = path.join(__dirname, '../public', 'data.json'); // Caminho 
 
 // GET comments
 app.get('/api/comments', (req, res) => {
-  console.log('GET /api/comments called');
+  console.log('GET /api/comments chamado');
   fs.readFile(dataFilePath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading data:', err);
@@ -69,6 +69,74 @@ app.post('/api/comments', (req, res) => {
     }
   });
 });
+
+app.delete("/api/comments/:id", (req, res) => {
+  const idComment = parseInt(req.params.id, 10)
+  console.log(`api/comments/:${idComment} chamado`)
+
+  fs.readFile(dataFilePath, "utf8", (err, data) => {
+    if ( err ) {
+      console.log("Erro ao ler o JSON", err)
+      res.status(500).json({ message: "Error lendo dados"})
+      return;
+    }
+
+    try {
+      const dadosJSON = JSON.parse(data)
+      const comments = dadosJSON.comments
+      const commentIndex = comments.findIndex( comment => comment.id === idComment )
+      
+
+      if (commentIndex === -1) {
+        res.status(404).json({ message: 'Comment not found' });
+        return;
+      }
+
+      if ( req.headers["type"] === "reply" ) { // PARA CASO SEJA UM REPLY
+        console.log("Deletando um reply")
+        console.log(req.headers["id-reply"])
+        
+        const replies = comments[commentIndex].replies
+        const replyID = req.headers["id-reply"]
+        
+        const indexReply = replies.findIndex( reply => reply.id === replyID )
+
+        replies.splice(indexReply, 1)
+
+        fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
+          if ( err ) {
+            console.log("Erro ao ler os dados:", err)
+            res.status(500).json({ message: "Error lendo dados"})
+            return;
+          }
+  
+          res.status(200).json({ message: "Comentário removido com sucesso!"})
+  
+        })
+
+      } else { // PARA CASO SEJA UM COMMENT
+        
+        console.log("Deletando um comment")
+        comments.splice(commentIndex, 1)
+
+        fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
+          if ( err ) {
+            console.log("Erro ao ler os dados:", err)
+            res.status(500).json({ message: "Error lendo dados"})
+            return;
+          }
+  
+          res.status(200).json({ message: "Comentário removido com sucesso!"})
+  
+        })
+      }
+
+    } catch ( erro ) {
+      console.error('Erro ao converter:', erro);
+      res.status(500).json({ message: 'Erro ao converter dados' });
+    }
+  })
+})
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
