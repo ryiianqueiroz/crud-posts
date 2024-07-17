@@ -1,0 +1,31 @@
+input[type="checkbox"] {
+    display: none;
+}
+
+/* Estilo para o label que vai funcionar como o checkbox */
+label {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 26px; /* Ajuste para centralizar o texto verticalmente */
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 600;
+    user-select: none;
+    color: rgb(202, 193, 219);
+}
+
+/* Conteúdo do label quando não está marcado */
+label::before {
+    content: "+";
+}
+
+/* Muda o conteúdo do label quando o checkbox está marcado */
+input[type="checkbox"]:checked + label::before {
+    color: rgba(67, 13, 214, 0.76);
+}
+
+.minus::before {
+    content: "-";
+}
