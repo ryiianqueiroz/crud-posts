@@ -30,7 +30,7 @@ function CommentSection() {
 
   useEffect(() => {
     getComments();
-  })
+  }, [])
 
   const deleteComment = async ( id, type = "comment", idReply = "default" ) => {
     console.log(id)
@@ -116,26 +116,27 @@ function CommentSection() {
   };
 
   const scoreUpdate = ( idComment, scoreComment, method, idReply = -1 ) => {
-    const checkboxPlus = document.getElementById(`plus-${idComment}`)
-    const checkboxMinus = document.getElementById(`minus-${idComment}`)
-    const replyCheckboxPlus = document.getElementById(`plus-${idReply}`)
-    const replyCheckboxMinus = document.getElementById(`minus-${idReply}`)    
+    const checkboxPlus = document.getElementById(`commentPlus-${idComment}`)
+    const checkboxMinus = document.getElementById(`commentMinus-${idComment}`)
+    const replyCheckboxPlus = document.getElementById(`replyPlus-${idReply}`)
+    const replyCheckboxMinus = document.getElementById(`replyMinus-${idReply}`)    
     let gain = parseInt(scoreComment)
 
     if ( idReply === -1 ) {
+      console.log("IDREPLY É IGUAL -1")
       if ( method === "add" ) {
         if ( checkboxMinus.checked ) {
           checkboxMinus.checked = false
           
           gain = gain + 2
-          return score( idComment, gain )
+          return score( idComment, gain, -1 )
         } else {
           if ( checkboxPlus.checked ) {
             gain = gain + 1
-            return score( idComment, gain )
+            return score( idComment, gain, -1 )
           } else {
             gain = gain - 1
-            return score( idComment, gain )
+            return score( idComment, gain, -1 )
           }
         }
       } else { 
@@ -143,18 +144,19 @@ function CommentSection() {
           checkboxPlus.checked = false
     
           gain = gain - 2
-          return score( idComment, gain )
+          return score( idComment, gain, -1 )
         } else {
           if ( checkboxMinus.checked ) {
             gain = gain - 1          
-            return score( idComment, gain )
+            return score( idComment, gain, -1 )
           } else {
             gain = gain + 1
-            return score( idComment, gain )
+            return score( idComment, gain, -1 )
           }
         }
       }
     } else { // IF IDREPLY != -1  !!!!!!
+      console.log("IDREPLY É DIFERENTE -1")
       if ( method === "add" ) {
         if ( replyCheckboxMinus.checked ) {
           replyCheckboxMinus.checked = false
@@ -206,15 +208,15 @@ function CommentSection() {
     <div className="flex flex-col p-[50px] pb-[25%]">
       {comments.map((comment) => {
         return (
-          <div className="mt-4 rounded-sm" id={comment.id} key={comment.id}> {/* FUNCTION COMENTÁRIO */}
+          <div className="mt-4 rounded-sm" key={comment.id} id={comment.id}> {/* FUNCTION COMENTÁRIO */}
             <div className="bg-white flex min-h-[120px]"> {/* POST */}
               <div className="flex flex-col w-[15%]">
                 <div className="bg-[#eaecf1] m-auto min-w-[30px] max-h-[95px] items-center rounded-md text-center">
-                  <input type="checkbox" id={`plus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "add")} />
-                  <label htmlFor={`plus-${comment.id}`}></label>
+                  <input type="checkbox" id={`commentPlus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "add", -1)} />
+                  <label htmlFor={`commentPlus-${comment.id}`}></label>
                   <h3 className="py-2 text-[#4d319c] font-medium">{comment.score}</h3>
-                  <input type="checkbox" id={`minus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "subtract")}/>
-                  <label className="minus" htmlFor={`minus-${comment.id}`}></label>
+                  <input type="checkbox" id={`commentMinus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "subtract", -1)}/>
+                  <label className="minus" htmlFor={`commentMinus-${comment.id}`}></label>
                 </div>
               </div>
 
@@ -296,11 +298,11 @@ function CommentSection() {
                     <div key={reply.id} id={reply.id}>
                       <div className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px]">
                         <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] items-center rounded-md">
-                          <input type="checkbox" id={`plus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "add", reply.id)} />
-                          <label htmlFor={`plus-${reply.id}`}></label>
+                          <input type="checkbox" id={`replyPlus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "add", reply.id)} />
+                          <label htmlFor={`replyPlus-${reply.id}`}></label>
                           <h3 className="py-2 text-[#4d319c] font-medium">{reply.score}</h3>
-                          <input type="checkbox" id={`minus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "subtract", reply.id)}/>
-                          <label htmlFor={`minus-${reply.id}`} className="minus"></label>
+                          <input type="checkbox" id={`replyMinus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "subtract", reply.id)}/>
+                          <label htmlFor={`replyMinus-${reply.id}`} className="minus"></label>
                         </div>
 
                         <div className="p-4">

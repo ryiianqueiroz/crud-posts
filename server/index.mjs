@@ -178,7 +178,7 @@ app.delete("/api/comments/:id", (req, res) => {
 
 app.put("/api/comments/:id", (req, res) => { // METODO UPDATE
   if ( req.headers["content"] ) {  // SE FOR O FUNCTION PARA UPDATE CONTENT
-    console.log(`UPDATE /api/comments/${req.params.id} chamado:`, req.headers["content"]);
+    console.log(`UPDATE CONTENT /api/comments/${req.params.id} chamado:`, req.headers["content"]);
     const idComment = parseInt(req.params.id, 10)
 
     fs.readFile(dataFilePath, 'utf8', (err, data) => {
@@ -245,8 +245,8 @@ app.put("/api/comments/:id", (req, res) => { // METODO UPDATE
         res.status(500).json({ message: 'Erro ao converter dados' });
       }
     });
-  } else {
-    console.log(`UPDATE /api/comments/${req.params.id} chamado:`, req.headers["gain"]);
+  } else {  //////////// METODO SCORE ///////////
+    console.log(`UPDATE SCORE /api/comments/${req.params.id} chamado:`, req.headers["gain"]);
     const idComment = parseInt(req.params.id, 10)
 
     fs.readFile(dataFilePath, 'utf8', (err, data) => {
@@ -256,19 +256,18 @@ app.put("/api/comments/:id", (req, res) => { // METODO UPDATE
         return;
       }
 
-      console.log(req.headers["id-reply"])
-
       try {
         if ( parseInt(req.headers["id-reply"]) === -1 ) {
+          console.log("COMMENTÁRIO")
           const dadosJSON = JSON.parse(data)
           const comments = dadosJSON.comments
           const commentIndex = comments.findIndex( comment => comment.id === idComment )
 
           const commentID = comments[commentIndex]
-          console.log(commentID)
+          console.log("ID do Comment = ", commentID)
 
           const newScore = req.headers["gain"];
-          console.log(newScore)
+          console.log("Novo Score = ", newScore)
           commentID.score = newScore;
 
           fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
@@ -280,6 +279,7 @@ app.put("/api/comments/:id", (req, res) => { // METODO UPDATE
             res.status(201).json(commentID);
           });
         } else {
+          console.log("RESPOSTA")
           const dadosJSON = JSON.parse(data)
           const comments = dadosJSON.comments
           const commentIndex = comments.findIndex( comment => comment.id === idComment )
@@ -288,8 +288,6 @@ app.put("/api/comments/:id", (req, res) => { // METODO UPDATE
           const replyID = parseInt(req.headers["id-reply"])
           
           const indexReply = replies.findIndex( (reply) => {
-            console.log(reply.id)
-            console.log(replyID)
             if ( parseInt(reply.id) === replyID ) {
               return parseInt(reply.id)
             }
