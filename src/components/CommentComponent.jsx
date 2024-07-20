@@ -7,7 +7,6 @@ function CommentComponent() {
   
   const [ Loading, setLoading ] = useState(false)
   
-
   useEffect(() => {
     setLoading(true)
   }, [])

@@ -10,7 +10,7 @@ function PostSection() {
     e.preventDefault()
     const newComment = {
       content,
-      createdAt: "a few moments ago...",
+      createdAt: "a few moments ago",
       score: 0,
       user: {
         image: { 

@@ -30,7 +30,7 @@ function CommentSection() {
 
   useEffect(() => {
     getComments();
-  }, [])
+  })
 
   const deleteComment = async ( id, type = "comment", idReply = "default" ) => {
     console.log(id)
@@ -305,7 +305,7 @@ function CommentSection() {
                           <label htmlFor={`replyMinus-${reply.id}`} className="minus"></label>
                         </div>
 
-                        <div className="p-4">
+                        <div className="p-4 w-[85%]">
                           <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
                             <div className="flex text-center items-center">
                               <img src={`../src/assets/images/avatars/image-${reply.user.username}.png`} className="w-6" alt="avatar" />

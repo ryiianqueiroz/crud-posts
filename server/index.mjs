@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -11,31 +11,65 @@ const app = express();
 // eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 5000;
 
-// Configure CORS
 app.use(cors({
   origin: 'http://localhost:5173',
 }));
 app.use(express.json());
 
-const dataFilePath = path.join(__dirname, '../public', 'data.json'); // Caminho correto para data.json
+let dataFilePathFirst = path.join(__dirname, '../public', 'data-copy.json');
+let dataFilePath = path.join(__dirname, '../public', 'data.json');
 
-// GET comments
-app.get('/api/comments', (req, res) => {
-  console.log('GET /api/comments chamado');
-  fs.readFile(dataFilePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Erro ao ler data:', err);
-      res.status(500).json({ message: 'Erro ao ler data' });
+const initializeData = async () => {
+  try {
+    await fs.copyFile(dataFilePathFirst, dataFilePath);
+    console.log('Arquivo inicial copiado com sucesso');
+  } catch (err) {
+    console.error('Erro ao copiar arquivo inicial:', err);
+  }
+};
+
+const deleteDataFile = async () => {
+  try {
+    await fs.rm(dataFilePath, { force: true });
+    console.log('Arquivo deletado com sucesso');
+  } catch (err) {
+    console.error('Erro ao deletar arquivo:', err);
+  }
+};
+
+// Middleware para gerenciar o arquivo data.json
+app.use(async (req, res, next) => {
+  console.log(`Middleware chamado para ${req.method} ${req.url}`);
+  const fileExists = await fs.access(dataFilePath).then(() => true).catch(() => false);
+  console.log(`O arquivo data.json existe? ${fileExists}`);
+  
+  if (!fileExists) {
+    try {
+      console.log('Inicializando dados...');
+      await initializeData();
+    } catch (err) {
+      console.error('Erro ao inicializar dados:', err);
+      res.status(500).json({ message: 'Erro ao inicializar dados' });
       return;
     }
-    try {
-      const parsedData = JSON.parse(data);
-      res.json(parsedData.comments);
-    } catch (parseErr) {
-      console.error('Erro ao converter: ', parseErr);
-      res.status(500).json({ message: 'Error parsing data' });
-    }
-  });
+  }
+  next();
+});
+
+app.get('/api/comments', async (req, res) => {
+  console.log('GET /api/comments chamado');
+  try {
+    console.log('Tentando ler o arquivo data.json...');
+    const data = await fs.readFile(dataFilePath, 'utf8');
+    console.log('Arquivo lido com sucesso');
+    const parsedData = JSON.parse(data);
+    console.log('Dados lidos:', parsedData);
+    res.json(parsedData.comments);
+    console.log('Resposta enviada com sucesso');
+  } catch (err) {
+    console.error('Erro ao ler data:', err);
+    res.status(500).json({ message: 'Erro ao ler data' });
+  }
 });
 
 // POST new comment
@@ -316,6 +350,16 @@ app.put("/api/comments/:id", (req, res) => { // METODO UPDATE
   }
 })
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await deleteDataFile();
+    await initializeData();
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Erro ao iniciar o servidor:', err);
+  }
+};
+
+startServer();
