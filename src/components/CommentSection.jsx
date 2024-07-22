@@ -205,18 +205,40 @@ function CommentSection() {
 
   return (
   <>
-    <div className="flex flex-col p-[50px] pb-[25%]">
+    <div className="flex flex-col p-[50px] pb-[25%] md:p-[30px] md:pb-[170px]">
       {comments.map((comment) => {
         return (
           <div className="mt-4 rounded-sm" key={comment.id} id={comment.id}> {/* FUNCTION COMENTÁRIO */}
-            <div className="bg-white flex min-h-[120px]"> {/* POST */}
-              <div className="flex flex-col w-[15%]">
-                <div className="bg-[#eaecf1] m-auto min-w-[30px] max-h-[95px] items-center rounded-md text-center">
+            <div className="bg-white flex min-h-[120px] sm:flex-col-reverse"> {/* POST */}
+              <div className="flex flex-col w-[15%] sm:flex-row sm:w-full sm:px-[20px] sm:justify-between sm:pb-[10px]">
+                <div className="bg-[#eaecf1] m-auto min-w-[30px] max-h-[95px] items-center rounded-md text-center sm:m-0 sm:flex">
                   <input type="checkbox" id={`commentPlus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "add", -1)} />
                   <label htmlFor={`commentPlus-${comment.id}`}></label>
                   <h3 className="py-2 text-[#4d319c] font-medium">{comment.score}</h3>
                   <input type="checkbox" id={`commentMinus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "subtract", -1)}/>
                   <label className="minus" htmlFor={`commentMinus-${comment.id}`}></label>
+                </div>
+              
+                <div className="flex items-center hidden sm:flex">
+                  { comment.user.username == "juliusomo" ? (
+                    <div className="flex cursor-pointer hover:opacity-30" onClick={() => deleteComment(comment.id)}>
+                      <img src={DeleteIcon} className="w-2 h-3 my-[3px] mx-1" alt="delete-icon" />
+                      <p className="text-[#ce1c1c] mr-2 text-[0.8rem]">Delete</p>
+                    </div>
+                  ) : (
+                    <></>
+                  ) }
+                  { comment.user.username == "juliusomo" ? (
+                    <div className="flex cursor-pointer hover:opacity-30" onClick={() => editShow(comment.id, -1, comment.content)}>
+                      <img src={Edit} className="h-[10px] my-auto mr-1" alt="reply icon" />
+                      <h4 className="text-[0.8rem] text-[#482c96]">Edit</h4>
+                    </div>
+                  ) : (
+                    <div className="flex cursor-pointer hover:opacity-30" onClick={() => replyShow(comment.id, -1, comment.user.username)}>
+                      <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
+                      <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
+                    </div>
+                  ) }
                 </div>
               </div>
 
@@ -235,7 +257,7 @@ function CommentSection() {
                     <p className="ml-2 font-normal text-[0.8rem] text-[gray]">{comment.createdAt}</p>
                   </div>
 
-                  <div className="flex items-center">
+                  <div className="flex items-center sm:hidden">
                     { comment.user.username == "juliusomo" ? (
                       <div className="flex cursor-pointer hover:opacity-30" onClick={() => deleteComment(comment.id)}>
                         <img src={DeleteIcon} className="w-2 h-3 my-[3px] mx-1" alt="delete-icon" />
@@ -296,14 +318,39 @@ function CommentSection() {
                 comment.replies.map((reply) => {
                   return (
                     <div key={reply.id} id={reply.id}>
-                      <div className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px]">
-                        <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] items-center rounded-md">
-                          <input type="checkbox" id={`replyPlus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "add", reply.id)} />
-                          <label htmlFor={`replyPlus-${reply.id}`}></label>
-                          <h3 className="py-2 text-[#4d319c] font-medium">{reply.score}</h3>
-                          <input type="checkbox" id={`replyMinus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "subtract", reply.id)}/>
-                          <label htmlFor={`replyMinus-${reply.id}`} className="minus"></label>
-                        </div>
+                      <div className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px] md:ml-[50px] md:max-w-[100%] sm:flex-col-reverse">
+                        <div className="flex"> 
+                          <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] items-center rounded-md sm:flex-row">
+                            <input type="checkbox" id={`replyPlus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "add", reply.id)} />
+                            <label htmlFor={`replyPlus-${reply.id}`}></label>
+                            <h3 className="py-2 text-[#4d319c] font-medium">{reply.score}</h3>
+                            <input type="checkbox" id={`replyMinus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "subtract", reply.id)}/>
+                            <label htmlFor={`replyMinus-${reply.id}`} className="minus"></label>
+                          </div>
+
+                          <div className="items-center hidden sm:flex">
+                            { reply.user.username == "juliusomo" ? (
+                              <div className="flex cursor-pointer hover:opacity-30" onClick={() => deleteComment(comment.id, "reply", reply.id)}>
+                                <img src={DeleteIcon} className="w-2 h-3 my-[3px] mx-1" alt="delete-icon" />
+                                <p className="text-[#ce1c1c] mr-2 text-[0.8rem]">Delete</p>
+                              </div>
+                            ) : (
+                              <></>
+                            ) }
+
+                            { reply.user.username == "juliusomo" ? (
+                              <div className="flex cursor-pointer hover:opacity-30" onClick={() => editShow(-1, reply.id, reply.content)}>
+                                <img src={Edit} className="h-[10px] my-auto mr-1" alt="reply icon" />
+                                <h4 className="text-[0.8rem] text-[#482c96]">Edit</h4>
+                              </div>
+                            ) : (
+                              <div className="flex cursor-pointer hover:opacity-30" onClick={() => replyShow(-1, reply.id, reply.user.username)}>
+                                <img src={Reply} className="h-[10px] my-auto mr-1" alt="reply icon" />
+                                <h4 className="text-[0.8rem] text-[#482c96]">Reply</h4>
+                              </div>
+                            ) }
+                            </div>
+                          </div>
 
                         <div className="p-4 w-[85%]">
                           <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
@@ -318,7 +365,7 @@ function CommentSection() {
                               <p className="ml-2 font-normal text-[0.8rem] text-[gray]">{reply.createdAt}</p>
                             </div>
 
-                            <div className="flex items-center">
+                            <div className="flex items-center sm:hidden">
                               { reply.user.username == "juliusomo" ? (
                                 <div className="flex cursor-pointer hover:opacity-30" onClick={() => deleteComment(comment.id, "reply", reply.id)}>
                                   <img src={DeleteIcon} className="w-2 h-3 my-[3px] mx-1" alt="delete-icon" />

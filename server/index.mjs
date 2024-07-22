@@ -63,7 +63,6 @@ app.get('/api/comments', async (req, res) => {
     const data = await fs.readFile(dataFilePath, 'utf8');
     console.log('Arquivo lido com sucesso');
     const parsedData = JSON.parse(data);
-    console.log('Dados lidos:', parsedData);
     res.json(parsedData.comments);
     console.log('Resposta enviada com sucesso');
   } catch (err) {

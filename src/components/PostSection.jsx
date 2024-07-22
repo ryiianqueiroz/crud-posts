@@ -26,7 +26,7 @@ function PostSection() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex fixed bottom-0 px-[50px] min-w-[700px] min-h-[130px] mb-3 rounded-lg">
+    <form onSubmit={handleSubmit} className="flex fixed bottom-0 px-[50px] min-w-[700px] min-h-[130px] mb-3 rounded-lg md:px-[30px] md:min-w-[100%]">
       <div className="bg-white w-full grid grid-cols-[auto,1fr,auto] gap-4">
         <div className="m-5">
           <img src={Avatar} alt="#" className="w-10"/>
