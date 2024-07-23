@@ -8,17 +8,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-// eslint-disable-next-line no-undef
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
+// Configuração do middleware
 app.use(cors({
   origin: 'http://localhost:5173',
 }));
 app.use(express.json());
 
-let dataFilePathFirst = path.join(__dirname, '../public', 'data-copy.json');
-let dataFilePath = path.join(__dirname, '../public', 'data.json');
+// Caminhos dos arquivos
+const dataFilePathFirst = path.join(__dirname, '../public', 'data-copy.json');
+const dataFilePath = path.join(__dirname, '../public', 'data.json');
 
+// Inicializa os dados no arquivo data.json
 const initializeData = async () => {
   try {
     await fs.copyFile(dataFilePathFirst, dataFilePath);
@@ -28,6 +30,7 @@ const initializeData = async () => {
   }
 };
 
+// Deleta o arquivo data.json
 const deleteDataFile = async () => {
   try {
     await fs.rm(dataFilePath, { force: true });
@@ -56,12 +59,26 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Middleware para log de requisições
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  next();
+});
+
+// Middleware para tratamento de erros
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('Erro inesperado:', err);
+  res.status(500).json({ message: 'Erro interno do servidor' });
+});
+
+// Rota GET para obter os comentários
 app.get('/api/comments', async (req, res) => {
   console.log('GET /api/comments chamado');
   try {
-    console.log('Tentando ler o arquivo data.json...');
     const data = await fs.readFile(dataFilePath, 'utf8');
-    console.log('Arquivo lido com sucesso');
     const parsedData = JSON.parse(data);
     res.json(parsedData.comments);
     console.log('Resposta enviada com sucesso');
@@ -71,284 +88,140 @@ app.get('/api/comments', async (req, res) => {
   }
 });
 
-// POST new comment
-app.post('/api/comments', (req, res) => {  // POSTAR UM COMMENT
+// Rota POST para adicionar um novo comentário
+app.post('/api/comments', async (req, res) => {
   console.log('POST /api/comments chamado:', req.body);
-  fs.readFile(dataFilePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Erro ao ler data:', err);
-      res.status(500).json({ message: 'Erro ao ler data' });
-      return;
-    }
-
-    try {
-      const parsedData = JSON.parse(data);
-      const comments = parsedData.comments;
-      const newComment = req.body;
-      newComment.id = comments.length + 1; // Atribuindo um ID ao novo comentário
-      comments.push(newComment);
-
-      fs.writeFile(dataFilePath, JSON.stringify(parsedData), (err) => {
-        if (err) {
-          console.error('Erro ao escrever dados:', err);
-          res.status(500).json({ message: 'Erro ao escrever dados' });
-          return;
-        }
-        res.status(201).json(newComment);
-      });
-    } catch (parseErr) {
-      console.error('Erro ao converter: ', parseErr);
-      res.status(500).json({ message: 'Error parsing data' });
-    }
-  });
-});
-
-app.post('/api/comments/:id', (req, res) => {  // POSTAR UM REPLY
-  console.log(`POST /api/comments/${req.params.id} chamado:`, req.body);
-  const idComment = parseInt(req.params.id, 10)
-
-  fs.readFile(dataFilePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Erro ao ler data:', err);
-      res.status(500).json({ message: 'Erro ao ler data' });
-      return;
-    }
-
-    try {
-      const dadosJSON = JSON.parse(data)
-      const comments = dadosJSON.comments
-      const commentIndex = comments.findIndex( comment => comment.id === idComment )
-
-      const replies = comments[commentIndex]
-      console.log(replies)
-
-      const newComment = req.body;
-      newComment.id = replies.replies.length + 3; // Atribuindo um ID ao novo comentário
-      replies.replies.push(newComment);
-
-      fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
-        if (err) {
-          console.error('Erro ao escrever dados:', err);
-          res.status(500).json({ message: 'Erro ao escrever dados' });
-          return;
-        }
-        res.status(201).json(newComment);
-      });
-    } catch (erroConverter) {
-      console.error('Erro ao converter: ', erroConverter);
-      res.status(500).json({ message: 'Erro ao converter dados' });
-    }
-  });
-});
-
-app.delete("/api/comments/:id", (req, res) => {
-  const idComment = parseInt(req.params.id, 10)
-  console.log(`api/comments/:${idComment} chamado`)
-
-  fs.readFile(dataFilePath, "utf8", (err, data) => {
-    if ( err ) {
-      console.log("Erro ao ler o JSON", err)
-      res.status(500).json({ message: "Error lendo dados"})
-      return;
-    }
-
-    try {
-      const dadosJSON = JSON.parse(data)
-      const comments = dadosJSON.comments
-      const commentIndex = comments.findIndex( comment => comment.id === idComment )
-      
-
-      if (commentIndex === -1) {
-        res.status(404).json({ message: 'Comment not found' });
-        return;
-      }
-
-      if ( req.headers["type"] === "reply" ) { // PARA CASO SEJA UM REPLY
-        console.log("Deletando um reply")
-        console.log(req.headers["id-reply"])
-        
-        const replies = comments[commentIndex].replies
-        const replyID = req.headers["id-reply"]
-        
-        const indexReply = replies.findIndex( reply => reply.id === replyID )
-
-        replies.splice(indexReply, 1)
-
-        fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
-          if ( err ) {
-            console.log("Erro ao ler os dados:", err)
-            res.status(500).json({ message: "Error lendo dados"})
-            return;
-          }
   
-          res.status(200).json({ message: "Comentário removido com sucesso!"})
-  
-        })
-
-      } else { // PARA CASO SEJA UM COMMENT
-        
-        console.log("Deletando um comment")
-        comments.splice(commentIndex, 1)
-
-        fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
-          if ( err ) {
-            console.log("Erro ao ler os dados:", err)
-            res.status(500).json({ message: "Error lendo dados"})
-            return;
-          }
-  
-          res.status(200).json({ message: "Comentário removido com sucesso!"})
-  
-        })
-      }
-
-    } catch ( erro ) {
-      console.error('Erro ao converter:', erro);
-      res.status(500).json({ message: 'Erro ao converter dados' });
-    }
-  })
-})
-
-app.put("/api/comments/:id", (req, res) => { // METODO UPDATE
-  if ( req.headers["content"] ) {  // SE FOR O FUNCTION PARA UPDATE CONTENT
-    console.log(`UPDATE CONTENT /api/comments/${req.params.id} chamado:`, req.headers["content"]);
-    const idComment = parseInt(req.params.id, 10)
-
-    fs.readFile(dataFilePath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Erro ao ler data:', err);
-        res.status(500).json({ message: 'Erro ao ler data' });
-        return;
-      }
-
-      console.log(req.headers["id-reply"])
-
-      try {
-        if ( parseInt(req.headers["id-reply"]) === -1 ) {
-          const dadosJSON = JSON.parse(data)
-          const comments = dadosJSON.comments
-          const commentIndex = comments.findIndex( comment => comment.id === idComment )
-
-          const commentID = comments[commentIndex]
-          console.log(commentID)
-
-          const newContent = req.headers["content"];
-          console.log(newContent)
-          commentID.content = newContent;
-
-          fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
-            if (err) {
-              console.error('Erro ao escrever dados:', err);
-              res.status(500).json({ message: 'Erro ao escrever dados' });
-              return;
-            }
-            res.status(201).json(commentID);
-          });
-        } else {
-          const dadosJSON = JSON.parse(data)
-          const comments = dadosJSON.comments
-          const commentIndex = comments.findIndex( comment => comment.id === idComment )
-
-          const replies = comments[commentIndex].replies
-          const replyID = parseInt(req.headers["id-reply"])
-          
-          const indexReply = replies.findIndex( (reply) => {
-            if ( parseInt(reply.id) === replyID ) {
-              return parseInt(reply.id)
-            }
-          } )                
-
-          console.log(`IndexReply =`, indexReply)
-          const reply = replies[indexReply]
-
-          const newContent = req.headers["content"];
-          reply.content = newContent;
-
-          fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
-            if (err) {
-              console.error('Erro ao escrever dados:', err);
-              res.status(500).json({ message: 'Erro ao escrever dados' });
-              return;
-            }
-            res.status(201).json(reply);
-          });
-        }
-      } catch (erroConverter) {
-        console.error('Erro ao converter: ', erroConverter);
-        res.status(500).json({ message: 'Erro ao converter dados' });
-      }
-    });
-  } else {  //////////// METODO SCORE ///////////
-    console.log(`UPDATE SCORE /api/comments/${req.params.id} chamado:`, req.headers["gain"]);
-    const idComment = parseInt(req.params.id, 10)
-
-    fs.readFile(dataFilePath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Erro ao ler data:', err);
-        res.status(500).json({ message: 'Erro ao ler data' });
-        return;
-      }
-
-      try {
-        if ( parseInt(req.headers["id-reply"]) === -1 ) {
-          console.log("COMMENTÁRIO")
-          const dadosJSON = JSON.parse(data)
-          const comments = dadosJSON.comments
-          const commentIndex = comments.findIndex( comment => comment.id === idComment )
-
-          const commentID = comments[commentIndex]
-          console.log("ID do Comment = ", commentID)
-
-          const newScore = req.headers["gain"];
-          console.log("Novo Score = ", newScore)
-          commentID.score = newScore;
-
-          fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
-            if (err) {
-              console.error('Erro ao escrever dados:', err);
-              res.status(500).json({ message: 'Erro ao escrever dados' });
-              return;
-            }
-            res.status(201).json(commentID);
-          });
-        } else {
-          console.log("RESPOSTA")
-          const dadosJSON = JSON.parse(data)
-          const comments = dadosJSON.comments
-          const commentIndex = comments.findIndex( comment => comment.id === idComment )
-
-          const replies = comments[commentIndex].replies
-          const replyID = parseInt(req.headers["id-reply"])
-          
-          const indexReply = replies.findIndex( (reply) => {
-            if ( parseInt(reply.id) === replyID ) {
-              return parseInt(reply.id)
-            }
-          } )                
-
-          console.log(`IndexReply =`, indexReply)
-          const reply = replies[indexReply]
-
-          const newScore = req.headers["gain"];
-          reply.score = newScore;
-
-          fs.writeFile(dataFilePath, JSON.stringify(dadosJSON), (err) => {
-            if (err) {
-              console.error('Erro ao escrever dados:', err);
-              res.status(500).json({ message: 'Erro ao escrever dados' });
-              return;
-            }
-            res.status(201).json(reply);
-          });
-        }
-      } catch (erroConverter) {
-        console.error('Erro ao converter: ', erroConverter);
-        res.status(500).json({ message: 'Erro ao converter dados' });
-      }
-    });
+  try {
+    const data = await fs.readFile(dataFilePath, 'utf8');
+    const parsedData = JSON.parse(data);
+    const newComment = req.body;
+    newComment.id = parsedData.comments.length + 1;
+    parsedData.comments.push(newComment);
+    await fs.writeFile(dataFilePath, JSON.stringify(parsedData, null, 2));
+    res.status(201).json(newComment);
+    console.log('Novo comentário adicionado com sucesso');
+  } catch (err) {
+    console.error('Erro ao processar solicitação:', err);
+    res.status(500).json({ message: 'Erro ao processar solicitação' });
   }
-})
+});
 
+// Rota POST para adicionar uma resposta a um comentário
+app.post('/api/comments/:id', async (req, res) => {
+  console.log(`POST /api/comments/${req.params.id} chamado:`, req.body);
+  const idComment = parseInt(req.params.id, 10);
+
+  try {
+    const data = await fs.readFile(dataFilePath, 'utf8');
+    const parsedData = JSON.parse(data);
+    const comments = parsedData.comments;
+    const commentIndex = comments.findIndex(comment => comment.id === idComment);
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: 'Comentário não encontrado' });
+    }
+
+    const replies = comments[commentIndex].replies || [];
+    const newReply = req.body;
+    newReply.id = replies.length + 1; // Atribuindo um ID ao novo comentário
+    replies.push(newReply);
+    comments[commentIndex].replies = replies;
+
+    await fs.writeFile(dataFilePath, JSON.stringify(parsedData, null, 2));
+    res.status(201).json(newReply);
+    console.log('Resposta adicionada com sucesso');
+  } catch (err) {
+    console.error('Erro ao processar solicitação:', err);
+    res.status(500).json({ message: 'Erro ao processar solicitação' });
+  }
+});
+
+// Rota DELETE para remover um comentário ou uma resposta
+app.delete('/api/comments/:id', async (req, res) => {
+  const idComment = parseInt(req.params.id, 10);
+  console.log(`DELETE /api/comments/${idComment} chamado`);
+
+  try {
+    const data = await fs.readFile(dataFilePath, 'utf8');
+    const parsedData = JSON.parse(data);
+    const comments = parsedData.comments;
+    const commentIndex = comments.findIndex(comment => comment.id === idComment);
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: 'Comentário não encontrado' });
+    }
+
+    if (req.headers.type === 'reply') {
+      console.log('Deletando uma resposta');
+      const replies = comments[commentIndex].replies || [];
+      const replyID = parseInt(req.headers['id-reply'], 10);
+      const replyIndex = replies.findIndex(reply => reply.id === replyID);
+
+      if (replyIndex === -1) {
+        return res.status(404).json({ message: 'Resposta não encontrada' });
+      }
+
+      replies.splice(replyIndex, 1);
+      comments[commentIndex].replies = replies;
+    } else {
+      console.log('Deletando um comentário');
+      comments.splice(commentIndex, 1);
+    }
+
+    await fs.writeFile(dataFilePath, JSON.stringify(parsedData, null, 2));
+    res.status(200).json({ message: 'Comentário removido com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao processar solicitação:', err);
+    res.status(500).json({ message: 'Erro ao processar solicitação' });
+  }
+});
+
+// Rota PUT para atualizar um comentário ou resposta
+app.put('/api/comments/:id', async (req, res) => {
+  const idComment = parseInt(req.params.id, 10);
+  const content = req.headers['content'];
+  const gain = req.headers['gain'];
+  const idReply = parseInt(req.headers['id-reply'], 10);
+
+  try {
+    const data = await fs.readFile(dataFilePath, 'utf8');
+    const parsedData = JSON.parse(data);
+    const comments = parsedData.comments;
+    const commentIndex = comments.findIndex(comment => comment.id === idComment);
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: 'Comentário não encontrado' });
+    }
+
+    if (idReply === -1) {
+      // Atualizar conteúdo ou escore do comentário
+      const comment = comments[commentIndex];
+      if (content) comment.content = content;
+      if (gain) comment.score = gain;
+    } else {
+      // Atualizar conteúdo ou escore de uma resposta
+      const replies = comments[commentIndex].replies || [];
+      const replyIndex = replies.findIndex(reply => reply.id === idReply);
+
+      if (replyIndex === -1) {
+        return res.status(404).json({ message: 'Resposta não encontrada' });
+      }
+
+      const reply = replies[replyIndex];
+      if (content) reply.content = content;
+      if (gain) reply.score = gain;
+    }
+
+    await fs.writeFile(dataFilePath, JSON.stringify(parsedData, null, 2));
+    res.status(200).json({ message: 'Atualização realizada com sucesso' });
+  } catch (err) {
+    console.error('Erro ao processar solicitação:', err);
+    res.status(500).json({ message: 'Erro ao processar solicitação' });
+  }
+});
+
+// Inicia o servidor
 const startServer = async () => {
   try {
     await deleteDataFile();

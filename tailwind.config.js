@@ -12,13 +12,9 @@ export default {
     },
     screens: {
       'xl': {'max': '1023px'},
-      // => @media (max-width: 1023px) { ... }
-
       'md': {'max': '767px'},
-      // => @media (max-width: 767px) { ... }
-
       'sm': {'max': '550px'},
-      // => @media (max-width: 639px) { ... }
+      "mob": {"max": "400px"}
     }
   },
   plugins: [],

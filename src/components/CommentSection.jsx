@@ -27,10 +27,9 @@ function CommentSection() {
     }
   };
 
-
   useEffect(() => {
     getComments();
-  })
+  });
 
   const deleteComment = async ( id, type = "comment", idReply = "default" ) => {
     console.log(id)
@@ -242,17 +241,19 @@ function CommentSection() {
                 </div>
               </div>
 
-              <div className="p-4 w-[85%]">
+              <div className="p-4 w-[85%] sm:w-full">
                 <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
-                  <div className="flex text-center items-center">
-                    <img src={`../src/assets/images/avatars/image-${comment.user.username}.png`} className="w-6" alt="avatar" />
-                    <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{comment.user.username}</p>
-                    
-                    { comment.user.username == "juliusomo" ? (
-                      <p className="px-1 py-[2px] text-center mx-1 bg-[#6a41da] text-white text-[0.6rem]">you</p>
-                    ) : (
-                      <></>
-                    ) }
+                  <div className="flex text-center items-center sm:w-full sm:justify-between">
+                    <div className="flex">
+                      <img src={`../src/assets/images/avatars/image-${comment.user.username}.png`} className="w-6" alt="avatar" />
+                      <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541] mob:text-[0.8rem]">{comment.user.username}</p>
+
+                      { comment.user.username == "juliusomo" ? (
+                        <p className="px-1 py-[2px] text-center mx-1 bg-[#6a41da] text-white text-[0.6rem] max-h-[20px] mob:text-[0.5rem]">you</p>
+                      ) : (
+                        <></>
+                      ) }
+                    </div>
 
                     <p className="ml-2 font-normal text-[0.8rem] text-[gray]">{comment.createdAt}</p>
                   </div>
@@ -319,7 +320,7 @@ function CommentSection() {
                   return (
                     <div key={reply.id} id={reply.id}>
                       <div className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px] md:ml-[50px] md:max-w-[100%] sm:flex-col-reverse">
-                        <div className="flex"> 
+                        <div className="flex sm:justify-between sm:mr-[18px]"> 
                           <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] items-center rounded-md sm:flex-row">
                             <input type="checkbox" id={`replyPlus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "add", reply.id)} />
                             <label htmlFor={`replyPlus-${reply.id}`}></label>
@@ -352,16 +353,19 @@ function CommentSection() {
                             </div>
                           </div>
 
-                        <div className="p-4 w-[85%]">
+                        <div className="p-4 w-[85%] sm:w-full">
                           <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
-                            <div className="flex text-center items-center">
-                              <img src={`../src/assets/images/avatars/image-${reply.user.username}.png`} className="w-6" alt="avatar" />
-                              <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{reply.user.username}</p>
-                              { reply.user.username == "juliusomo" ? (
-                                <p className="px-1 py-[2px] text-center mx-1 bg-[#5457b6] text-white text-[0.6rem]">you</p>
-                              ) : (
-                                <></>
-                              ) }
+                            <div className="flex text-center items-center sm:w-full sm:justify-between">
+                              <div className="flex">
+                                <img src={`../src/assets/images/avatars/image-${reply.user.username}.png`} className="w-6" alt="avatar" />
+                                <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{reply.user.username}</p>
+                                { reply.user.username == "juliusomo" ? (
+                                  <p className="px-1 py-[2px] text-center mx-1 bg-[#5457b6] text-white text-[0.6rem] max-h-[20px]">you</p>
+                                ) : (
+                                  <></>
+                                ) }
+                              </div>
+
                               <p className="ml-2 font-normal text-[0.8rem] text-[gray]">{reply.createdAt}</p>
                             </div>
 
