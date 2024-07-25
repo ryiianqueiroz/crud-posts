@@ -204,16 +204,16 @@ function CommentSection() {
 
   return (
   <>
-    <div className="flex flex-col p-[50px] pb-[25%] md:p-[30px] md:pb-[170px]">
+    <div className="flex flex-col p-[50px] pb-[25%] md:p-[30px] md:pb-[170px] mobsmall:p-[15px] mobsmall:pb-[170px]">
       {comments.map((comment) => {
         return (
           <div className="mt-4 rounded-sm" key={comment.id} id={comment.id}> {/* FUNCTION COMENTÁRIO */}
             <div className="bg-white flex min-h-[120px] sm:flex-col-reverse"> {/* POST */}
-              <div className="flex flex-col w-[15%] sm:flex-row sm:w-full sm:px-[20px] sm:justify-between sm:pb-[10px]">
-                <div className="bg-[#eaecf1] m-auto min-w-[30px] max-h-[95px] items-center rounded-md text-center sm:m-0 sm:flex">
+              <div className="flex flex-col w-[15%] sm:flex-row sm:w-full sm:px-[20px] sm:justify-between sm:pb-[10px] mobsmall:px-[15px]">
+                <div className="bg-[#eaecf1] m-auto min-w-[30px] max-h-[95px] items-center rounded-md text-center sm:m-0 sm:flex mobsmall:max-h-[35px] mobsmall:min-w-[90px] mobsmall:justify-around">
                   <input type="checkbox" id={`commentPlus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "add", -1)} />
                   <label htmlFor={`commentPlus-${comment.id}`}></label>
-                  <h3 className="py-2 text-[#4d319c] font-medium">{comment.score}</h3>
+                  <h3 className="py-2 text-[#4d319c] font-medium mob:text-[0.9rem]">{comment.score}</h3>
                   <input type="checkbox" id={`commentMinus-${comment.id}`} className="m-auto" onClick={() => scoreUpdate(comment.id, comment.score, "subtract", -1)}/>
                   <label className="minus" htmlFor={`commentMinus-${comment.id}`}></label>
                 </div>
@@ -244,18 +244,18 @@ function CommentSection() {
               <div className="p-4 w-[85%] sm:w-full">
                 <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
                   <div className="flex text-center items-center sm:w-full sm:justify-between">
-                    <div className="flex">
+                    <div className="flex items-center">
                       <img src={`../src/assets/images/avatars/image-${comment.user.username}.png`} className="w-6" alt="avatar" />
                       <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541] mob:text-[0.8rem]">{comment.user.username}</p>
 
                       { comment.user.username == "juliusomo" ? (
-                        <p className="px-1 py-[2px] text-center mx-1 bg-[#6a41da] text-white text-[0.6rem] max-h-[20px] mob:text-[0.5rem]">you</p>
+                        <p className="px-1 py-[2px] text-center mx-1 bg-[#5457b6] text-white text-[0.6rem] max-h-[19px] mob:max-h-[17px] mob:text-[0.5rem]">you</p>
                       ) : (
                         <></>
                       ) }
                     </div>
 
-                    <p className="ml-2 font-normal text-[0.8rem] text-[gray]">{comment.createdAt}</p>
+                    <p className="ml-2 font-normal text-[0.8rem] text-[gray] mobsmall:text-[0.7rem]">{comment.createdAt}</p>
                   </div>
 
                   <div className="flex items-center sm:hidden">
@@ -319,12 +319,12 @@ function CommentSection() {
                 comment.replies.map((reply) => {
                   return (
                     <div key={reply.id} id={reply.id}>
-                      <div className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px] md:ml-[50px] md:max-w-[100%] sm:flex-col-reverse">
+                      <div className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px] md:ml-[50px] md:max-w-[100%] sm:flex-col-reverse mob:ml-4">
                         <div className="flex sm:justify-between sm:mr-[18px]"> 
-                          <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] items-center rounded-md sm:flex-row">
+                          <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] items-center rounded-md sm:flex-row mobsmall:min-w-[90px] mobsmall:justify-around">
                             <input type="checkbox" id={`replyPlus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "add", reply.id)} />
                             <label htmlFor={`replyPlus-${reply.id}`}></label>
-                            <h3 className="py-2 text-[#4d319c] font-medium">{reply.score}</h3>
+                            <h3 className="py-2 text-[#4d319c] font-medium mobsmall:text-[0.9rem]">{reply.score}</h3>
                             <input type="checkbox" id={`replyMinus-${reply.id}`} onClick={() => scoreUpdate(comment.id, reply.score, "subtract", reply.id)}/>
                             <label htmlFor={`replyMinus-${reply.id}`} className="minus"></label>
                           </div>
@@ -356,9 +356,9 @@ function CommentSection() {
                         <div className="p-4 w-[85%] sm:w-full">
                           <div className="flex justify-between items-center"> {/* AVATAR / DIAS POSTADOS / REPLY */}
                             <div className="flex text-center items-center sm:w-full sm:justify-between">
-                              <div className="flex">
+                              <div className="flex items-center">
                                 <img src={`../src/assets/images/avatars/image-${reply.user.username}.png`} className="w-6" alt="avatar" />
-                                <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541]">{reply.user.username}</p>
+                                <p className="ml-2 font-medium text-[0.9rem] text-[#0e1541] mobsmall:text-[0.8rem] mobsmall:p-0 mobsmall:m-0 mobsmall:ml-2">{reply.user.username}</p>
                                 { reply.user.username == "juliusomo" ? (
                                   <p className="px-1 py-[2px] text-center mx-1 bg-[#5457b6] text-white text-[0.6rem] max-h-[20px]">you</p>
                                 ) : (
@@ -366,7 +366,7 @@ function CommentSection() {
                                 ) }
                               </div>
 
-                              <p className="ml-2 font-normal text-[0.8rem] text-[gray]">{reply.createdAt}</p>
+                              <p className="ml-2 font-normal text-[0.8rem] text-[gray] mobsmall:text-[0.7rem]">{reply.createdAt}</p>
                             </div>
 
                             <div className="flex items-center sm:hidden">

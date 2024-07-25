@@ -14,7 +14,8 @@ export default {
       'xl': {'max': '1023px'},
       'md': {'max': '767px'},
       'sm': {'max': '550px'},
-      "mob": {"max": "400px"}
+      "mob": {"max": "400px"},
+      "mobsmall": {"max": "360px"}
     }
   },
   plugins: [],
