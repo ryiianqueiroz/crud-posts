@@ -3,6 +3,7 @@ import cors from 'cors';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { randomUUID } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -124,7 +125,7 @@ app.post('/api/comments/:id', async (req, res) => {
 
     const replies = comments[commentIndex].replies || [];
     const newReply = req.body;
-    newReply.id = replies.length + 1; // Atribuindo um ID ao novo comentário
+    newReply.idReply = randomUUID(); // Atribuindo um ID ao novo comentário
     replies.push(newReply);
     comments[commentIndex].replies = replies;
 
@@ -155,8 +156,8 @@ app.delete('/api/comments/:id', async (req, res) => {
     if (req.headers.type === 'reply') {
       console.log('Deletando uma resposta');
       const replies = comments[commentIndex].replies || [];
-      const replyID = parseInt(req.headers['id-reply'], 10);
-      const replyIndex = replies.findIndex(reply => reply.id === replyID);
+      const replyID = req.headers['id-reply'];
+      const replyIndex = replies.findIndex(reply => reply.idReply === replyID);
 
       if (replyIndex === -1) {
         return res.status(404).json({ message: 'Resposta não encontrada' });
@@ -182,7 +183,7 @@ app.put('/api/comments/:id', async (req, res) => {
   const idComment = parseInt(req.params.id, 10);
   const content = req.headers['content'];
   const gain = req.headers['gain'];
-  const idReply = parseInt(req.headers['id-reply'], 10);
+  const idReplyy = req.headers['id-reply'];
 
   try {
     const data = await fs.readFile(dataFilePath, 'utf8');
@@ -194,7 +195,7 @@ app.put('/api/comments/:id', async (req, res) => {
       return res.status(404).json({ message: 'Comentário não encontrado' });
     }
 
-    if (idReply === -1) {
+    if (idReplyy === -1) {
       // Atualizar conteúdo ou escore do comentário
       const comment = comments[commentIndex];
       if (content) comment.content = content;
@@ -202,7 +203,7 @@ app.put('/api/comments/:id', async (req, res) => {
     } else {
       // Atualizar conteúdo ou escore de uma resposta
       const replies = comments[commentIndex].replies || [];
-      const replyIndex = replies.findIndex(reply => reply.id === idReply);
+      const replyIndex = replies.findIndex(reply => reply.idReply === idReplyy);
 
       if (replyIndex === -1) {
         return res.status(404).json({ message: 'Resposta não encontrada' });
