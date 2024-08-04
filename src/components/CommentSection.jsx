@@ -108,6 +108,7 @@ function CommentSection() {
 
     postReply( idComment, newComment )
     setTextArea("")
+    setReplyInterface(-1)
   }
 
   const handleChangeReplying = (e) => {
@@ -282,7 +283,7 @@ function CommentSection() {
                 </div>
 
                 <div>
-                  <p className="text-[0.85rem] text-gray-700 mt-3">{comment.content}</p>
+                  <p className="text-[0.85rem] text-gray-700 mt-3 break-all">{comment.content}</p>
                 </div>
               </div>
             </div>
@@ -302,11 +303,11 @@ function CommentSection() {
                       onChange={handleChangeReplying}> 
                     </textarea>
                   </div>
-                  <div className="m-5 cursor-pointer" onClick={() => setReplyInterface(-1)}>
+                  <div className="m-5 cursor-pointer" onClick={() => { replyInterface != -1 ? setReplyInterface(-1) : setUpdateInterface(-1) }}>
                   { replyInterface != -1 ? (
-                    <button type="submit" onClick={() => replyingTo(comment.id, comment.user.username)} className="p-3 px-5 bg-[#5457b6] text-white rounded-lg text-[0.9rem]">SEND</button>
+                    <button type="button" onClick={() => replyingTo(comment.id, comment.user.username)} className="p-3 px-5 bg-[#5457b6] text-white rounded-lg text-[0.9rem]">SEND</button>
                   ) : (
-                    <button type="submit" onClick={() => editContent(comment.id, -1, textAreaValue)} className="p-3 px-5 bg-[#5457b6] text-white rounded-lg text-[0.9rem]">SEND</button>
+                    <button type="button" onClick={() => editContent(comment.id, -1, textAreaValue)} className="p-3 px-5 bg-[#5457b6] text-white rounded-lg text-[0.9rem]">SEND</button>
                   )}
                   </div>
                 </div>
@@ -320,7 +321,7 @@ function CommentSection() {
                   return (
                     <div key={reply.idReply} id={reply.idReply}>
                       <div className="bg-white mt-4 rounded-sm flex max-w-[500px] ml-[100px] md:ml-[50px] md:max-w-[100%] sm:flex-col-reverse mob:ml-4">
-                        <div className="flex sm:justify-between sm:mr-[18px]"> 
+                        <div className="flex sm:justify-between sm:mr-[18px] sm:gap-0"> 
                           <div className="flex flex-col bg-[#eaecf1] m-5 min-w-[30px] max-h-[88px] items-center rounded-md sm:flex-row mobsmall:min-w-[90px] mobsmall:justify-around">
                             <input type="checkbox" id={`replyPlus-${reply.idReply}`} onClick={() => scoreUpdate(comment.id, reply.score, "add", reply.idReply)} />
                             <label htmlFor={`replyPlus-${reply.idReply}`}></label>
@@ -329,7 +330,7 @@ function CommentSection() {
                             <label htmlFor={`replyMinus-${reply.idReply}`} className="minus"></label>
                           </div>
 
-                          <div className="items-center hidden sm:flex">
+                          <div className="items-center hidden sm:flex mobsmall:flex-col mobsmall:my-auto">
                             { reply.user.username == "juliusomo" ? (
                               <div className="flex cursor-pointer hover:opacity-30" onClick={() => deleteComment(comment.id, "reply", reply.idReply)}>
                                 <img src={DeleteIcon} className="w-2 h-3 my-[3px] mx-1" alt="delete-icon" />
@@ -399,7 +400,7 @@ function CommentSection() {
                             ) : ( 
                               <></>
                             )}
-                            <p className="text-[0.85rem] text-gray-700 mt-3">{reply.content.replace(/@\S+\s?/, "")}</p>
+                            <p className="text-[0.85rem] text-gray-700 mt-3 break-all">{reply.content.replace(/@\S+\s?/, "")}</p>
                           </div>
                         </div>
                       </div>

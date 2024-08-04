@@ -34,10 +34,19 @@ const initializeData = async () => {
 // Deleta o arquivo data.json
 const deleteDataFile = async () => {
   try {
-    await fs.rm(dataFilePath, { force: true });
-    console.log('Arquivo deletado com sucesso');
+    await fs.unlink(dataFilePath);  // Tenta deletar o arquivo
+    console.info(`Successfully removed file with the path of ${dataFilePath}`);
   } catch (err) {
-    console.error('Erro ao deletar arquivo:', err);
+    if (err.code === 'ENOENT') {
+      // O arquivo não existe, então nada a fazer
+      console.info("File doesn't exist, no need to delete.");
+    } else if (err.code === 'EPERM') {
+      // Permissões insuficientes, reporte o erro
+      console.error("Permission denied. Cannot delete the file.", err);
+    } else {
+      // Outro erro
+      console.error("Something went wrong during deletion. Please try again later.", err);
+    }
   }
 };
 
@@ -60,20 +69,12 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Middleware para log de requisições
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
-  console.log('Body:', req.body);
-  next();
-});
-
-// Middleware para tratamento de erros
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error('Erro inesperado:', err);
   res.status(500).json({ message: 'Erro interno do servidor' });
 });
+
 
 // Rota GET para obter os comentários
 app.get('/api/comments', async (req, res) => {
@@ -181,25 +182,27 @@ app.delete('/api/comments/:id', async (req, res) => {
 // Rota PUT para atualizar um comentário ou resposta
 app.put('/api/comments/:id', async (req, res) => {
   const idComment = parseInt(req.params.id, 10);
-  const content = req.headers['content'];
-  const gain = req.headers['gain'];
-  const idReplyy = req.headers['id-reply'];
+  const conteudo = req.headers['content'];
+  const gain = parseInt(req.headers['gain']);  
+  const idReplyy = (req.headers['id-reply']);
 
   try {
     const data = await fs.readFile(dataFilePath, 'utf8');
     const parsedData = JSON.parse(data);
     const comments = parsedData.comments;
     const commentIndex = comments.findIndex(comment => comment.id === idComment);
+    console.log(commentIndex)
+    console.log(idReplyy)
 
     if (commentIndex === -1) {
       return res.status(404).json({ message: 'Comentário não encontrado' });
     }
 
-    if (idReplyy === -1) {
+    if (idReplyy === "-1") {
       // Atualizar conteúdo ou escore do comentário
       const comment = comments[commentIndex];
-      if (content) comment.content = content;
-      if (gain) comment.score = gain;
+      if (conteudo) { comment.content = conteudo }
+      if (gain) { comment.score = gain }
     } else {
       // Atualizar conteúdo ou escore de uma resposta
       const replies = comments[commentIndex].replies || [];
@@ -210,8 +213,8 @@ app.put('/api/comments/:id', async (req, res) => {
       }
 
       const reply = replies[replyIndex];
-      if (content) reply.content = content;
-      if (gain) reply.score = gain;
+      if (conteudo) { reply.content = conteudo }
+      if (gain) { reply.score = gain }
     }
 
     await fs.writeFile(dataFilePath, JSON.stringify(parsedData, null, 2));
@@ -236,3 +239,4 @@ const startServer = async () => {
 };
 
 startServer();
+

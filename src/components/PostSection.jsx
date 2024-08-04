@@ -31,7 +31,7 @@ function PostSection() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex fixed bottom-0 px-[50px] min-w-[700px] min-h-[130px] mb-3 rounded-lg md:px-[30px] md:min-w-[100%] mob:p-0 mob:px-4 mob:mx-auto">
+    <form onSubmit={handleSubmit} className="flex fixed bottom-0 px-[50px] min-w-[700px] min-h-[130px] mb-3 rounded-lg md:px-[30px] md:min-w-[100%] mob:p-0 mob:px-[30px] mob:mx-auto mobsmall:px-[15px]">
       <div className="bg-white w-full">
         <div className="hidden justify-center max-h-[130px] mt-5 mob:flex mob:px-2">
           <textarea
@@ -42,7 +42,7 @@ function PostSection() {
           </textarea>
         </div>
         
-        <div className="grid grid-cols-[auto,1fr,auto] gap-4 mob:flex mob:justify-between">
+        <div className="grid grid-cols-[auto,1fr,auto] gap-4 md:gap-0 mob:flex mob:justify-between">
           <div className="m-5">
             <img src={Avatar} alt="avatar" className="w-10"/>
           </div>
