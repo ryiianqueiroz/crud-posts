@@ -6,9 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "backend": "node server/index.js",
-    "start": "node server.cjs"
+    "start": "vite preview",
+    "server": "node server/index.mjs"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
