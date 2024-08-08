@@ -13,7 +13,9 @@ const app = express();
 const PORT = process.env.PORT || 5000; // Railway define automaticamente a porta
 
 // Configuração do middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // Ajuste conforme necessário para segurança
+}));
 app.use(express.json());
 
 const dataFilePathFirst = path.join(__dirname, 'data-copy.json');
