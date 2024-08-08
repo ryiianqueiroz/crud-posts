@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// eslint-disable-next-line no-unused-vars
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ command }) => {
   if (command === 'serve') {
     // Configuração de desenvolvimento
     return {
@@ -26,7 +25,7 @@ export default defineConfig(({ command, mode }) => {
       },
       server: {
         // eslint-disable-next-line no-undef
-        port: process.env.PORT || 3000, // Use a porta definida pelo Railway ou a 3000 como fallback
+        port: process.env.PORT || 3000, // Use a porta definida pelo Railway ou 3000 como fallback
       },
     };
   }

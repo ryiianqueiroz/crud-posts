@@ -68,15 +68,18 @@ app.use((err, req, res, next) => {
 });
 
 app.get('/api/comments', async (req, res) => {
+  console.log('GET /api/comments chamado');
   try {
     const data = await fs.readFile(dataFilePath, 'utf8');
     const parsedData = JSON.parse(data);
     res.json(parsedData.comments);
+    console.log('Resposta enviada com sucesso');
   } catch (err) {
     console.error('Erro ao ler data:', err);
     res.status(500).json({ message: 'Erro ao ler data' });
   }
 });
+
 
 app.post('/api/comments', async (req, res) => {
   try {
