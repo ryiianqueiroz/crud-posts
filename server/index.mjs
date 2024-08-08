@@ -9,6 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 5000; // Railway define automaticamente a porta
 
 // Configuração do middleware
