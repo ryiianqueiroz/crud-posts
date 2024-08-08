@@ -13,7 +13,7 @@ const PORT = 5000;
 
 // Configuração do middleware
 app.use(cors({
-  origin: 'https://crud-posts-two.vercel.app/',
+  origin: 'http://localhost:5173',
 }));
 app.use(express.json());
 
